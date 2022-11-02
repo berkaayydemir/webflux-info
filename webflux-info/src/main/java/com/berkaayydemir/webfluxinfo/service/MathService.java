@@ -15,7 +15,7 @@ public class MathService {
     }
 
     public List<Response> mutliplicationTable(int input){
-        return IntStream.rangeClosed(1, 100)
+        return IntStream.rangeClosed(1, 10)
                 .peek(i -> SleepUtil.sleepSeconds(1))
                 .peek(i -> System.out.println("math-service processing : " + i))
                 .mapToObj(i -> new Response(i * input))
