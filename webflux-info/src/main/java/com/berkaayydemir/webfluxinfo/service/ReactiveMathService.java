@@ -18,7 +18,7 @@ public class ReactiveMathService {
     }
 
     public Flux<Response> multiplicationTable(int input){
-        return Flux.range(1,100)
+        return Flux.range(1,5)
                 //.doOnNext(i -> SleepUtil.sleepSeconds(i))
                 .delayElements(Duration.ofSeconds(1)) //Track the action as soon as the client cancels the request. does not do unnecessary work.
                 .doOnNext(i -> System.out.println("reactive-math-service processing: " + i))
