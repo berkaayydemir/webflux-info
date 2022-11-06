@@ -1,14 +1,12 @@
 package com.berkaayydemir.webfluxinfo.config;
 
 import com.berkaayydemir.webfluxinfo.dto.InputFailedValidationResponse;
+import com.berkaayydemir.webfluxinfo.dto.Response;
 import com.berkaayydemir.webfluxinfo.exception.InputValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Mono;
 
 import java.util.function.BiFunction;
@@ -20,13 +18,22 @@ public class RouterConfig {
 	private RequestHandler requestHandler;
 
 	@Bean
-	public RouterFunction<ServerResponse> serverResponseRouterFunction(){
+	public RouterFunction<ServerResponse> highLevelRouter(){
 		return RouterFunctions.route()
-				.GET("router/square/{input}", requestHandler::squareHandler)
-				.GET("router/table/{input}", requestHandler::tableHandler)
-				.GET("router/table/{input}/stream", requestHandler::tableStreamHandler)
-				.POST("router/multiply", requestHandler::multiplyHandler)
-				.GET("router/square/{input}/validation", requestHandler::squareHandlerWithValidation)
+				.path("router", this::serverResponseRouterFunction)
+				.build();
+
+	}
+
+	//@Bean
+	private RouterFunction<ServerResponse> serverResponseRouterFunction(){
+		return RouterFunctions.route()
+				.GET("square/{input}", RequestPredicates.path("*/1?"), requestHandler::squareHandler)
+				.GET("square/{input}", req -> ServerResponse.badRequest().bodyValue("only 10-19 range"))
+				.GET("table/{input}", requestHandler::tableHandler)
+				.GET("table/{input}/stream", requestHandler::tableStreamHandler)
+				.POST("multiply", requestHandler::multiplyHandler)
+				.GET("square/{input}/validation", requestHandler::squareHandlerWithValidation)
 				.onError(InputValidationException.class, exceptionHandler())
 				.build();
 
